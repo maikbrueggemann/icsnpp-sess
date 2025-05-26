@@ -1,0 +1,30 @@
+module sess_Zeek;
+
+import sess;
+import zeek;
+import spicy;
+
+public function is_pres_available(): bool &cxxname="is_pres_available";
+
+on sess::Spdus::%init {
+    if(is_pres_available())
+        zeek::protocol_begin("PRES");
+}
+
+on sess::Spdu::%done {
+    # we prepend the si value of the current spdu
+    # to the payload because the presentation layer
+    # dedpends on it
+    if(is_pres_available() && |self.payload|>0) {
+        zeek::protocol_data_in(
+            zeek::is_orig(),
+            pack(self.si, spicy::ByteOrder::Host)+self.payload,
+            spicy::Protocol::UDP
+        );
+    }
+}
+
+on sess::Spdus::%done {
+    if(is_pres_available())
+        zeek::protocol_end();
+}

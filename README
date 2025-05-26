@@ -1,0 +1,4 @@
+This plugin provides a protocol analyzer for the OSI session protocol (ISO 8327
+/ X.225) for use within Zeek. The analyzer enables Zeek to parse SPDUs and
+trigger further protocol parsing of PRESENTATION PPDUs, if the PRES analyzer is
+available.

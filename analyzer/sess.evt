@@ -1,0 +1,5 @@
+import sess;
+
+protocol analyzer SESS over UDP: parse with sess::Spdus;
+
+on sess::Spdu -> event sess::spdu($conn, $is_orig, self.si, self.payload);

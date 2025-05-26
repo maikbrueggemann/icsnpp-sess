@@ -1,0 +1,24 @@
+@TEST-DOC: Test parsing behavior of SESS.
+
+@TEST-EXEC: spicyc ${DIST}/analyzer/sess.spicy -j -d -o sess.hlto
+
+@TEST-EXEC: cat "${TRACES}/connect.bin" | spicy-dump sess.hlto >connect 2>&1
+@TEST-EXEC: btest-diff connect
+
+@TEST-EXEC: cat "${TRACES}/accept.bin" | spicy-dump sess.hlto >accept 2>&1
+@TEST-EXEC: btest-diff accept
+
+@TEST-EXEC: cat "${TRACES}/finish.bin" | spicy-dump sess.hlto >finish 2>&1
+@TEST-EXEC: btest-diff finish
+
+@TEST-EXEC: cat "${TRACES}/disconnect.bin" | spicy-dump sess.hlto >disconnect 2>&1
+@TEST-EXEC: btest-diff disconnect
+
+@TEST-EXEC: printf "\001\000" | spicy-dump sess.hlto >give-token 2>&1
+@TEST-EXEC: btest-diff give-token
+
+@TEST-EXEC: printf "\001\000\001\000" | spicy-dump sess.hlto >empty-data 2>&1
+@TEST-EXEC: btest-diff empty-data
+
+@TEST-EXEC: printf "\001\000\001\000TEST" | spicy-dump sess.hlto >data 2>&1
+@TEST-EXEC: btest-diff data

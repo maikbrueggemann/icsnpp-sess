@@ -1,0 +1,24 @@
+[package]
+script_dir = scripts
+test_command = cd testing && btest -c btest.cfg
+summary = Analyzer for OSI Session Protocol (SESS)
+description = The Analyzer implements the OSI Session Protocol
+    according to ISO 8327 / X.225 and forwards the payload
+    to the PRES Analyzer.
+depends = 
+	zeek >=4.0.0
+build_command = mkdir -p build && cd build && SPICYZ=$(command -v spicyz || echo %(package_base)s/spicy-plugin/build/bin/spicyz) cmake .. && cmake --build .
+
+[template]
+source = https://github.com/zeek/package-template
+version = v3.1.7
+zkg_version = 3.0.1-33
+features = spicy-protocol-analyzer
+
+[template_vars]
+name = sess
+analyzer = SESS
+protocol = UDP
+unit_orig = Spuds
+unit_resp = Spdus
+

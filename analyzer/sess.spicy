@@ -1,0 +1,63 @@
+module sess;
+
+import spicy;
+
+const DataTransferCode = 1;
+const ReasonCode = 50;
+const UserDataCode = 193;
+const ExtendedUserDataCode = 194;
+
+public type Spdus = unit {
+    first_pdu : Spdu(True);
+    last_pdus : Spdu(False)[];
+};
+
+# Section 8.2:
+# The Spdu type models a single SPDU and extracts the payload when applicable.
+type Spdu = unit(first_in_tsdu: bool) {
+    var is_data_transfer: bool;
+    var payload: bytes;
+
+    # Read the SPDU type indicator.
+    si: uint8 {
+        # Data Transfer SPDU must not be the first in a TSDU (see section 6.3.7).
+        self.is_data_transfer = $$==DataTransferCode && !first_in_tsdu;
+    }
+    li: LI;
+    parameter: PGI[] &size=self.li.value;
+    userInformation: bytes &eod
+        if(self.is_data_transfer)
+        {self.payload=$$;}
+
+    on parameter foreach {
+        if($$.si in [UserDataCode, ExtendedUserDataCode, ReasonCode])
+            self.payload=$$.content.data;
+    }
+};
+
+# PGI (Parameter Group Identifier) can also represent PI (Parameter Identifier).
+# Models SPDU parameters as specified in sections 8.2.2 and 8.2.3.
+type PGI = unit {
+    si: uint8;  # Parameter type/code.
+    li: LI;     # Parameter length.
+    content: PGIContent(self.si) &size=self.li.value;  # Content based on PI type.
+};
+
+# Represents the content of a parameter; interpretation depends on type code.
+type PGIContent = unit(si: uint8) {
+    reason_code: uint8 if(si==ReasonCode);  # Only present if code equals ReasonCode.
+    data: bytes &eod;                       # Parameter data.
+};
+
+# Section 8.2.5
+# LI (Length Indicator) supports extended format if required.
+type LI = unit {
+    var value: uint16;
+
+    raw: uint8;                              # Standard length indicator.
+    raw_ext: uint16 if (self.raw==255);      # Extended length if raw == 255.
+
+    on %done {
+        self.value = self.raw==255 ? self.raw_ext : self.raw;
+    }
+};
