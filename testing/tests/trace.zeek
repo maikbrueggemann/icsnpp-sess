@@ -8,7 +8,7 @@ event zeek_init() &priority=5 {
     Analyzer::register_for_port(Analyzer::ANALYZER_TPKT, 102/tcp);
 }
 
-event sess::spdu(c: connection, is_orig: bool, si: int, payload_length: int) {
-  print(fmt("Testing cotp: [orig_h=%s, orig_p=%s, resp_h=%s, resp_p=%s] %d | %d",
-	    c$id$orig_h, c$id$orig_p, c$id$resp_h, c$id$resp_p, si, payload_length));
+event sess::spdu(c: connection, is_orig: bool, si: int, payload: string) {
+  print(fmt("Testing sess: [orig_h=%s, orig_p=%s, resp_h=%s, resp_p=%s] %d | %d",
+	    c$id$orig_h, c$id$orig_p, c$id$resp_h, c$id$resp_p, si, |payload|));
 }
