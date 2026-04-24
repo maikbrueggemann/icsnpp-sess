@@ -14,7 +14,7 @@ protocol layers must also be processed. The following plugins must therefore
 also be installed:
 
 - [TPKT](https://github.com/DINA-community/icsnpp-tpkt)
-- [COTP](https://github.com/DINA-community/icsnpp-iso-cotp)
+- [COTP](https://github.com/DINA-community/icsnpp-cotp)
 
 In addition, zeek must support spicy.
 
@@ -23,8 +23,7 @@ In addition, zeek must support spicy.
 This script is available as a package for [Zeek Package Manager](https://docs.zeek.org/projects/package-manager/en/stable/index.html).
 
 ```bash
-zkg refresh
-zkg install sess
+zkg install https://github.com/DINA-community/icsnpp-sess
 ```
 
 If this package is installed from ZKG, it will be added to the available plugins. This can be tested by running `zeek -NN`. If installed correctly, users will see `ANALYZER_SESS` under the list of plugins.
